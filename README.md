@@ -6,7 +6,7 @@ A project for the Insight Data Engineering Fellowship.
 
 # Introduction
 
-A [bug was reporter for Kafka](https://issues.apache.org/jira/browse/KAFKA-7122) where data can be lost when the lead Kafka broker times out from ZooKeeper. This error occurs because the lead broker will continue to accept writes from the producer in the few seconds between disconnecting from ZooKeeper and realizing that it has timed out. This leads to an incorrect offset on that node that can be introduced into the cluster when the node eventually recovers and takes over as the lead broker again. 
+[There is a bug in Kafka](https://issues.apache.org/jira/browse/KAFKA-7122) where data can be lost when the lead Kafka broker times out from ZooKeeper. This error occurs because the lead broker will continue to accept writes from the producer in the few seconds between disconnecting from ZooKeeper and realizing that it has timed out. This leads to an incorrect offset on that node that can be introduced into the cluster when the node eventually recovers and takes over as the lead broker again. 
 
 # Tech Stack
 
