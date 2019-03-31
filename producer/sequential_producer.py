@@ -15,19 +15,19 @@ def get_max_range():
     except:
         return(100000)
 
-def produce(max_range_int, brokers):
+def produce(max_range_int, brokers, topic):
 
-    producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)
+    producer = KafkaProducer(bootstrap_servers = brokers)
     
     for i in range(max_range_int):
-        producer.send(KAFKA_TOPIC, str(i))
+        producer.send(topic, str(i))
         producer.flush()
         if i % 1000 == 0:
             print (i)
 
 def main():
     max_range = get_max_range()
-    produce(max_range)
+    produce(max_range, KAFKA_BROKERS, KAFKA_TOPIC)
 
 if __name__ == '__main__':
     try:
