@@ -2,6 +2,7 @@
 #spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.3.1 sequential_consumer.py
 
 import os
+import sys
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
@@ -15,21 +16,34 @@ POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASS = os.environ['POSTGRES_PASS']
 DATABASE = 'menagerie'
 
-sc = SparkContext(appName = APPNAME)
-ssc = StreamingContext(sc, 1)
-sc.setLogLevel("WARN")
+def show(line):
+    for l in line:
+        print(l[0])
+    
 
-connection = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
-cursor = connection.cursor()
+def main():
+    sc = SparkContext(appName = APPNAME)
+    sc.setLogLevel("WARN")
+    ssc = StreamingContext(sc, 1)
 
-def post(thing):
-    cursor.execute('INSERT INTO cc_test(cc, seen) values (' + str(thing) + ', True);')
+    connection = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
+    cursor = connection.cursor()
 
-kafkaStream = KafkaUtils.createDirectStream(ssc, ['menagerie'], {'metadata.broker.list': KAFKA_BROKERS})
-#kafkaStream.foreachRDD(lambda rdd: rdd.foreachPartition(post))
-kafkaStream.map(lambda x: x[1]).foreachRDD(lambda rdd: rdd.foreachPartition(post))
 
-print('\n\n\n\n\n\n\n\nhi curtis\n\n\n\n\n\n\n\n')
+    kafkaStream = KafkaUtils.createDirectStream(ssc, ['menagerie'], {'metadata.broker.list': KAFKA_BROKERS})
 
-ssc.start()
-ssc.awaitTermination()
+    transaction = kafkaStream.map(lambda row: row[1].split(','))
+
+    transaction.foreachRDD(lambda rdd: rdd.foreachPartition(show))
+        
+
+    print('\n\n\n\n\n\n\n\nhi curtis\n\n\n\n\n\n\n\n')
+
+    ssc.start()
+    ssc.awaitTermination()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit() 
