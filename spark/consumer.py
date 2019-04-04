@@ -20,27 +20,59 @@ def show(line):
     for l in line:
         print(l[0])
     
+def sequential_menagerie_insert(num):
+    connection = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
+    cursor = connection.cursor()
+    pass
 
+def transaction_main(sc, ssc):
+    kafkaStream = KafkaUtils.createDirectStream(
+        ssc,
+        ['menagerie'],
+        {'metadata.broker.list': KAFKA_BROKERS}
+    )
+    transaction = kafkaStream.map(lambda row: row[1].split(','))
+    transaction.foreachRDD(lambda rdd: rdd.foreachPartition(show))
+
+def sequential_main(sc, ssc):
+    kafkaStreamSequential = KafkaUtils.createDirectStream(
+        ssc,
+        ['sequential-menagerie'],
+        {'metadata.broker.list': KAFKA_BROKERS}
+    )
+    transactionSequential = kafkaStreamSequential.map(lambda row: row[1].split(','))
+    transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(sequential_menagerie_insert))
+    transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(show))
+    
 def main():
     sc = SparkContext(appName = APPNAME)
     sc.setLogLevel("WARN")
     ssc = StreamingContext(sc, 1)
 
-    connection = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
-    cursor = connection.cursor()
-
-
-    kafkaStream = KafkaUtils.createDirectStream(ssc, ['menagerie'], {'metadata.broker.list': KAFKA_BROKERS})
-    kafkaStreamSequential = KafkaUtils.createDirectStream(ssc, ['sequential-menagerie'], {'metadata.broker.list': KAFKA_BROKERS})
+    print(r''' 
+     __________             __                                             
+     \____    /____   ____ |  | __ ____   ____ ______   ___________  ______
+       /     //  _ \ /  _ \|  |/ // __ \_/ __ \\____ \_/ __ \_  __ \/  ___/
+      /     /(  <_> |  <_> )    <\  ___/\  ___/|  |_> >  ___/|  | \/\___ \ 
+     /_______ \____/ \____/|__|_ \\___  >\___  >   __/ \___  >__|  /____  >
+             \/                 \/    \/     \/|__|        \/           \/ 
+                    _____  .__              .__                
+                   /     \ |__| ______ _____|__| ____    ____  
+                  /  \ /  \|  |/  ___//  ___/  |/    \  / ___\ 
+                 /    Y    \  |\___ \ \___ \|  |   |  \/ /_/  >
+                 \____|__  /__/____  >____  >__|___|  /\___  / 
+                         \/        \/     \/        \//_____/  
+           _____                                            .__        
+          /     \   ____   ____ _____     ____   ___________|__| ____  
+         /  \ /  \_/ __ \ /    \\__  \   / ___\_/ __ \_  __ \  |/ __ \ 
+        /    Y    \  ___/|   |  \/ __ \_/ /_/  >  ___/|  | \/  \  ___/ 
+        \____|__  /\___  >___|  (____  /\___  / \___  >__|  |__|\___  >
+                \/     \/     \/     \//_____/      \/              \/ 
+    ''')
     
-    transaction = kafkaStream.map(lambda row: row[1].split(','))
-    transactionSequential = kafkaStreamSequential.map(lambda row: row[1].split(','))
- 
-    transaction.foreachRDD(lambda rdd: rdd.foreachPartition(show))
-    transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(show))
 
-    print('\n\n\n\n\n\n\n\nhi curtis\n\n\n\n\n\n\n\n')
-
+    transaction_main(sc, ssc)
+    sequential_main(sc, ssc)
     ssc.start()
     ssc.awaitTermination()
 
