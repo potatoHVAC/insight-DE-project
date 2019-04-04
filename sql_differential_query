@@ -1,0 +1,1 @@
+SELECT COUNT(*) - 1 - (SELECT cc_number FROM sequential_menagerie ORDER BY cc_number DESC LIMIT 1) AS differential FROM sequential_menagerie;
