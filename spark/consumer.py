@@ -19,11 +19,25 @@ DATABASE = 'menagerie'
 def show(line):
     for l in line:
         print(l[0])
+
+def show_occasional(num):
+    if int(num) % 3000 == 0:
+        print(num)
+
+def connect_to_menagerie():        
+    conn = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
+    return (conn.cursor(), conn)
+
+def sequential_menagerie_insert(line):
+    cur, conn = connect_to_menagerie()
+    for row in line:
+        show_occasional(row[0])
+        sql = 'INSERT INTO sequential_menagerie(cc_number, observed) VALUES ({}, True);'.format(row[0])
+        cur.execute(sql)
+        conn.commit()
+    cur.close()
+    conn.close()
     
-def sequential_menagerie_insert(num):
-    connection = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
-    cursor = connection.cursor()
-    pass
 
 def transaction_main(sc, ssc):
     kafkaStream = KafkaUtils.createDirectStream(
@@ -42,7 +56,7 @@ def sequential_main(sc, ssc):
     )
     transactionSequential = kafkaStreamSequential.map(lambda row: row[1].split(','))
     transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(sequential_menagerie_insert))
-    transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(show))
+    #transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(show))
     
 def main():
     sc = SparkContext(appName = APPNAME)

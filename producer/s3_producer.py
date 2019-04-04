@@ -4,7 +4,7 @@ import sys
 from kafka import KafkaProducer
 from smart_open import smart_open
 
-KAFKA_BUCKET = 's3://speerd-bucket/random.txt'
+KAFKA_BUCKET = 's3://speerd-bucket/hundred_thousand_transactions.txt'
 KAFKA_TOPIC = 'menagerie'
 KAFKA_BROKERS = 'ec2-52-39-96-200.us-west-2.compute.amazonaws.com:9092,ec2-54-190-33-242.us-west-2.compute.amazonaws.com:9092,ec2-52-43-141-42.us-west-2.compute.amazonaws.com:9092,ec2-34-217-198-217.us-west-2.compute.amazonaws.com:9092'
 
