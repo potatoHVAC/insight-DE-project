@@ -31,11 +31,13 @@ def main():
 
 
     kafkaStream = KafkaUtils.createDirectStream(ssc, ['menagerie'], {'metadata.broker.list': KAFKA_BROKERS})
-
+    kafkaStreamSequential = KafkaUtils.createDirectStream(ssc, ['sequential-menagerie'], {'metadata.broker.list': KAFKA_BROKERS})
+    
     transaction = kafkaStream.map(lambda row: row[1].split(','))
-
+    transactionSequential = kafkaStreamSequential.map(lambda row: row[1].split(','))
+ 
     transaction.foreachRDD(lambda rdd: rdd.foreachPartition(show))
-        
+    transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(show))
 
     print('\n\n\n\n\n\n\n\nhi curtis\n\n\n\n\n\n\n\n')
 

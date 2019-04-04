@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 from kafka import KafkaProducer
 
-KAFKA_TOPIC = 'menagerie'
+KAFKA_TOPIC = 'sequential-menagerie'
 KAFKA_BROKERS = 'ec2-52-39-96-200.us-west-2.compute.amazonaws.com:9092,ec2-54-190-33-242.us-west-2.compute.amazonaws.com:9092,ec2-52-43-141-42.us-west-2.compute.amazonaws.com:9092,ec2-34-217-198-217.us-west-2.compute.amazonaws.com:9092'
 
 def get_max_range():
@@ -19,7 +19,7 @@ def produce(max_range_int, brokers, topic):
     producer = KafkaProducer(bootstrap_servers = brokers)
     
     for i in range(max_range_int):
-        producer.send(topic, str(i))
+        producer.send(topic, str(i).encode('utf-8'))
         producer.flush()
         if i % 1000 == 0:
             print (i)
