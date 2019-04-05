@@ -21,7 +21,7 @@ def show(line):
         print(l[0])
 
 def show_occasional(num):
-    if int(num) % 3000 == 0:
+    if int(num) % 1000 == 0:
         print(num)
 
 def connect_to_menagerie():        
@@ -31,8 +31,7 @@ def connect_to_menagerie():
 def sequential_menagerie_insert(line):
     cur, conn = connect_to_menagerie()
     for row in line:
-        #show_occasional(row[0])
-        print(row[0])
+        show_occasional(row[0])
         sql = 'INSERT INTO sequential_menagerie(cc_number, observed) VALUES ({}, True);'.format(row[0])
         cur.execute(sql)
         conn.commit()
