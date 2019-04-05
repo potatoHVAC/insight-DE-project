@@ -1,1 +1,4 @@
-SELECT COUNT(*) - 1 - (SELECT cc_number FROM sequential_menagerie ORDER BY cc_number DESC LIMIT 1) AS differential FROM sequential_menagerie;
+SELECT COUNT(*) AS Total,
+(SELECT cc_number FROM sequential_menagerie ORDER BY cc_number DESC LIMIT 1) AS top,
+COUNT(*) - 1 - (SELECT cc_number FROM sequential_menagerie ORDER BY cc_number DESC LIMIT 1) AS diff
+FROM sequential_menagerie;
