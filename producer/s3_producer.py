@@ -6,7 +6,7 @@ from smart_open import smart_open
 
 KAFKA_BUCKET = 's3://speerd-bucket/hundred_thousand_transactions.txt'
 KAFKA_TOPIC = 'menagerie'
-KAFKA_BROKERS = 'ec2-52-39-96-200.us-west-2.compute.amazonaws.com:9092,ec2-54-190-33-242.us-west-2.compute.amazonaws.com:9092,ec2-52-43-141-42.us-west-2.compute.amazonaws.com:9092,ec2-34-217-198-217.us-west-2.compute.amazonaws.com:9092'
+KAFKA_BROKERS = 'ec2-34-215-153-129.us-west-2.compute.amazonaws.com:9092,ec2-52-36-50-195.us-west-2.compute.amazonaws.com:9092,ec2-52-88-169-142.us-west-2.compute.amazonaws.com:9092,ec2-54-71-226-161.us-west-2.compute.amazonaws.com:9092'
 
 def produce(bucket, brokers, topic):
 
