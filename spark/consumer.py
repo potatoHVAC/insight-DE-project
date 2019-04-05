@@ -31,7 +31,8 @@ def connect_to_menagerie():
 def sequential_menagerie_insert(line):
     cur, conn = connect_to_menagerie()
     for row in line:
-        show_occasional(row[0])
+        #show_occasional(row[0])
+        print(row[0])
         sql = 'INSERT INTO sequential_menagerie(cc_number, observed) VALUES ({}, True);'.format(row[0])
         cur.execute(sql)
         conn.commit()
@@ -56,7 +57,6 @@ def sequential_main(sc, ssc):
     )
     transactionSequential = kafkaStreamSequential.map(lambda row: row[1].split(','))
     transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(sequential_menagerie_insert))
-    #transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(show))
     
 def main():
     sc = SparkContext(appName = APPNAME)
