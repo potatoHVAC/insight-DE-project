@@ -9,9 +9,9 @@ KAFKA_BROKERS = 'ec2-52-39-96-200.us-west-2.compute.amazonaws.com:9092,ec2-54-19
 def get_max_range():
 
     try:
-        max_range_input = int(input("Maximum range [100,000]: "))
+        max_range_input = int(input("Maximum range [1,000,000,000]: "))
     except:
-        max_range_input = 100000
+        max_range_input = 1000000000
     return max_range_input
 
 def produce(max_range_int, brokers, topic):
