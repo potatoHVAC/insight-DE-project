@@ -4,6 +4,7 @@
 import os
 import sys
 import psycopg2
+from time import sleep
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
@@ -21,7 +22,7 @@ def show(line):
         print(l[0])
 
 def show_occasional(num):
-    if int(num) % 1000 == 0:
+    if int(num) % 1 == 0:
         print(num)
 
 def connect_to_menagerie():        
@@ -37,6 +38,7 @@ def sequential_menagerie_insert(line):
         conn.commit()
     cur.close()
     conn.close()
+    sleep(10)
 
 def transaction_main(sc, ssc):
     kafkaStream = KafkaUtils.createDirectStream(
