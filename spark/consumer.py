@@ -2,6 +2,7 @@
 #spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.3.1 sequential_consumer.py
 
 import os
+import re
 import sys
 import psycopg2
 from time import sleep
@@ -10,53 +11,47 @@ from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 
 SPARK_MASTER = 'ec2-35-165-101-226.us-west-2.compute.amazonaws.com'
-APPNAME = 'ZookeepersMissingMenagerie'
+APPNAME = 'SawThing'
 KAFKA_BROKERS = 'ec2-34-215-153-129.us-west-2.compute.amazonaws.com:9092,ec2-52-36-50-195.us-west-2.compute.amazonaws.com:9092,ec2-52-88-169-142.us-west-2.compute.amazonaws.com:9092,ec2-54-71-226-161.us-west-2.compute.amazonaws.com:9092'
 POSTGRESQL_URL = 'ec2-34-220-244-192.us-west-2.compute.amazonaws.com'
 POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASS = os.environ['POSTGRES_PASS']
 DATABASE = 'menagerie'
-
-def show(line):
-    for l in line:
-        print(l[0])
-
-def show_occasional(num):
-    if int(num) % 1 == 0:
-        print(num)
+TOKEN_MAX = 100
 
 def connect_to_menagerie():        
-    conn = psycopg2.connect(host = POSTGRESQL_URL, database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
+    conn = psycopg2.connect(host = POSTGRESQL_URL,
+                            database = DATABASE,
+                            user = POSTGRES_USER,
+                            password = POSTGRES_PASS)
     return (conn.cursor(), conn)
 
-def sequential_menagerie_insert(line):
+def get_ip(log):
+    return re.match('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', log).group(0)
+
+def get_date(log):
+    return re.findall('\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2}', log)[0]
+
+def saw_menagerie_insert(line):
     cur, conn = connect_to_menagerie()
     for row in line:
-        show_occasional(row[0])
-        sql = 'INSERT INTO sequential_menagerie(cc_number, observed) VALUES ({}, True);'.format(row[0])
-        cur.execute(sql)
-        conn.commit()
+        ip = get_ip(row[0])
+        print(ip)
+        date = get_date(row[0])
+        print(date)
+        #cur.execute(sql)
+        #conn.commit()
     cur.close()
     conn.close()
-    sleep(10)
 
-def transaction_main(sc, ssc):
-    kafkaStream = KafkaUtils.createDirectStream(
+def saw_main(sc, ssc):
+    kafkaStreamSaw = KafkaUtils.createDirectStream(
         ssc,
-        ['menagerie'],
+        ['apache_logs'],
         {'metadata.broker.list': KAFKA_BROKERS}
     )
-    transaction = kafkaStream.map(lambda row: row[1].split(','))
-    transaction.foreachRDD(lambda rdd: rdd.foreachPartition(show))
-
-def sequential_main(sc, ssc):
-    kafkaStreamSequential = KafkaUtils.createDirectStream(
-        ssc,
-        ['sequential-menagerie'],
-        {'metadata.broker.list': KAFKA_BROKERS}
-    )
-    transactionSequential = kafkaStreamSequential.map(lambda row: row[1].split(','))
-    transactionSequential.foreachRDD(lambda rdd: rdd.foreachPartition(sequential_menagerie_insert))
+    transactionSaw = kafkaStreamSaw.map(lambda row: row[1].split(','))
+    transactionSaw.foreachRDD(lambda rdd: rdd.foreachPartition(saw_menagerie_insert))
     
 def main():
     sc = SparkContext(appName = APPNAME)
@@ -64,29 +59,22 @@ def main():
     ssc = StreamingContext(sc, 1)
 
     print(r''' 
-     __________             __                                             
-     \____    /____   ____ |  | __ ____   ____ ______   ___________  ______
-       /     //  _ \ /  _ \|  |/ // __ \_/ __ \\____ \_/ __ \_  __ \/  ___/
-      /     /(  <_> |  <_> )    <\  ___/\  ___/|  |_> >  ___/|  | \/\___ \ 
-     /_______ \____/ \____/|__|_ \\___  >\___  >   __/ \___  >__|  /____  >
-             \/                 \/    \/     \/|__|        \/           \/ 
-                    _____  .__              .__                
-                   /     \ |__| ______ _____|__| ____    ____  
-                  /  \ /  \|  |/  ___//  ___/  |/    \  / ___\ 
-                 /    Y    \  |\___ \ \___ \|  |   |  \/ /_/  >
-                 \____|__  /__/____  >____  >__|___|  /\___  / 
-                         \/        \/     \/        \//_____/  
-           _____                                            .__        
-          /     \   ____   ____ _____     ____   ___________|__| ____  
-         /  \ /  \_/ __ \ /    \\__  \   / ___\_/ __ \_  __ \  |/ __ \ 
-        /    Y    \  ___/|   |  \/ __ \_/ /_/  >  ___/|  | \/  \  ___/ 
-        \____|__  /\___  >___|  (____  /\___  / \___  >__|  |__|\___  >
-                \/     \/     \/     \//_____/      \/              \/ 
-    ''')
-    
 
-    transaction_main(sc, ssc)
-    sequential_main(sc, ssc)
+
+
+
+
+
+    WE ARE UNDER ATTACK!!! MAN THE GIANT SAW THING!!!
+
+
+
+
+
+
+    ''')
+
+    saw_main(sc, ssc)
     ssc.start()
     ssc.awaitTermination()
 
