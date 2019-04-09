@@ -8,8 +8,10 @@ from smart_open import smart_open
 MALICIOUS_IP = 's3://speerd-bucket/malicious_ip.txt'
 FRIENDLY_IP = 's3://speerd-bucket/friendly_ip.txt'
 APACHE_MESSAGE = 's3://speerd-bucket/apache_messages.txt'
-APACHE_LOGS = 's3://speerd-bucket/apache_logs.txt'
-GENERATOR_LOGS = 's3://speerd-bucket/generator_logs.txt'
+APACHE_LOGS = 's3://speerd-bucket/apache_logs100k.txt'
+GENERATOR_LOGS = 's3://speerd-bucket/generator_logs100k.txt'
+
+CYCLES_SEC = 100000
 
 def build_array_from(file_location):
     return [str(line.strip()) for line in smart_open(file_location, 'r')]
@@ -29,7 +31,7 @@ def generate_ddos_logs(ips, time, messages):
 def generate_friendly_logs(ips, time, messages):
     friendly_logs = []
     for index, tup in enumerate(ips):
-        if random_chance(1):
+        if random_chance(3):
             friendly_logs.append(generate_random_log([tup[0]], time, messages))
             ips[index] = (tup[0], tup[1] - 1)
     ips = [ tup for tup in ips if tup[1] > 0 ]
@@ -50,16 +52,18 @@ def advance_counter(ip_tuples):
     return [ tup for tup in reduced_counter if tup[1] > 0 ]
 
 def activate_ips(active_ips, ips_history, ips_available, count, multiplier):
-    for i in range(count):
+    for i in range(randint(1,count)):
         new_ip = ips_available[randint(0, len(ips_available) - 1)]
-        active_ips.append((new_ip, randint(3*multiplier, 10*multiplier)))
+        active_ips.append((new_ip, randint(3*multiplier, 50*multiplier)))
         ips_history.add(new_ip)
     return (active_ips, ips_history)        
 
+
+
 def main():
-    malicious_ips = build_array_from(MALICIOUS_IP)[:20]
-    friendly_ips = build_array_from(FRIENDLY_IP)[:100]
-    messages = build_array_from(APACHE_MESSAGE)[:20]
+    malicious_ips = build_array_from(MALICIOUS_IP)
+    friendly_ips = build_array_from(FRIENDLY_IP)
+    messages = build_array_from(APACHE_MESSAGE)
     apache_log_file = smart_open(APACHE_LOGS, 'w')
     generator_logs = smart_open(GENERATOR_LOGS, 'w')
 
@@ -70,22 +74,22 @@ def main():
     active_friendly = []
     friendly_history = set()
 
-    while time_offset < 1000:
+    while time_offset < CYCLES_SEC:
 
-        if len(active_friendly) < 10 and random_chance(2):
+        if random_chance(2):
             active_friendly, friendly_history = activate_ips(
                 active_friendly,
                 friendly_history,
                 friendly_ips,
-                1,
+                3,
                 1
             )
-        if len(active_ddos) < 5 and random_chance(200):
+        if random_chance(1000) and time_offset < CYCLES_SEC - 500:
             active_ddos, ddos_history = activate_ips(
                 active_ddos,
                 ddos_history,
                 malicious_ips,
-                1,
+                5,
                 10
             )
             
@@ -95,7 +99,7 @@ def main():
             ddos_logs = generate_ddos_logs(active_ddos, start_time + time_offset, messages)
             post_logs(ddos_logs,  apache_log_file)
             active_ddos = advance_counter(active_ddos)
-        if active_friendly and time_offset > 6:
+        if active_friendly:
             friendly_logs, active_friendly = generate_friendly_logs(
                 active_friendly,
                 start_time + time_offset,
