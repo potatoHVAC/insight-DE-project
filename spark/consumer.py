@@ -12,7 +12,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from math import floor
 
 SPARK_MASTER = 'ec2-35-165-101-226.us-west-2.compute.amazonaws.com'
-APPNAME = 'SawThing'
+APPNAME = 'Olórin'
 KAFKA_BROKERS = (
     'ec2-34-215-153-129.us-west-2.compute.amazonaws.com:9092,\
     ec2-52-36-50-195.us-west-2.compute.amazonaws.com:9092,\
@@ -62,7 +62,7 @@ def blacklisted_ip(ip, time_stamp, cur, add_to_list = False):
 
     if len(blacklist_row) == 0:
         if add_to_list:
-            cur.execute('UPDATE ip SET credits = -3600, last_event = %s WHERE ip = %s;', [time_stamp, ip])
+            cur.execute('UPDATE ip SET credits = 0, last_event = %s WHERE ip = %s;', [time_stamp, ip])
             cur.execute('INSERT INTO blacklist(ip, last_event) VALUES (%s, %s);', [ip, time_stamp])
         else:
             return False
@@ -109,9 +109,12 @@ def main():
 
 
 
-
-    WE ARE UNDER ATTACK!!! MAN THE GIANT SAW THING!!!
-
+                    ________  .__               .__        
+                    \_____  \ |  |   __/________|__| ____  
+                     /   |   \|  |  /  _ \_  __ \  |/    \ 
+                    /    |    \  |_(  <_> )  | \/  |   |  \
+                    \_______  /____/\____/|__|  |__|___|  /
+                            \/                          \/ 
 
 
 
