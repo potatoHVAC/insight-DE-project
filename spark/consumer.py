@@ -12,7 +12,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from math import floor
 
 SPARK_MASTER = 'ec2-35-165-101-226.us-west-2.compute.amazonaws.com'
-APPNAME = 'Olórin'
+APPNAME = 'Olorin'
 KAFKA_BROKERS = (
     'ec2-34-215-153-129.us-west-2.compute.amazonaws.com:9092,\
     ec2-52-36-50-195.us-west-2.compute.amazonaws.com:9092,\
