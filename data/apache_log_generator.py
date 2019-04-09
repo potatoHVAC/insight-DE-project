@@ -53,7 +53,7 @@ def activate_ips(active_ips, ips_history, ips_available, up_to, multiplier, chan
         
         while len(active_ips) < number_to_reach and len(active_ips) <= len(ips_available) // 2:
             new_ip = ips_available[randint(0, len(ips_available) - 1)]
-            active_ips.append((new_ip, randint(3*multiplier, 50*multiplier)))
+            active_ips.append((new_ip, randint(10*multiplier, 30*multiplier)))
             ips_history.add(new_ip)
             
     return (active_ips, ips_history)        

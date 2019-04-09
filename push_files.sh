@@ -13,3 +13,7 @@ scp -i ~/.ssh/daniel-IAM-keypair.pem ./spark/start_consumer.sh ubuntu@ec2-35-165
 
 # postgresql
 
+# dash
+
+scp -i ~/.ssh/daniel-IAM-keypair.pem ./dash/olorin.py ubuntu@ec2-34-218-254-7.us-west-2.compute.amazonaws.com:~/
+
