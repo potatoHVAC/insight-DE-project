@@ -37,7 +37,8 @@ CREATE TRIGGER update_blacklist_event BEFORE UPDATE ON blacklist FOR EACH ROW EX
 ### 
 CREATE TABLE blacklist(
 ip VARCHAR(16) PRIMARY KEY,
-number_of_events INT DEFAULT 1,
+activated BOOLEAN DEFAULT True,
+incident_count INT DEFAULT 1,
 last_event TIMESTAMP,
 created_at TIMESTAMP DEFAULT current_timestamp,
 updated_at TIMESTAMP DEFAULT current_timestamp);
@@ -49,3 +50,10 @@ last_event TIMESTAMP,
 created_at TIMESTAMP DEFAULT current_timestamp,
 updated_at TIMESTAMP DEFAULT current_timestamp);
 
+CREATE TABLE locaiton(
+ip VARCHAR(16) PRIMARY KEY,
+city ,
+country,
+country_code ,
+latitude ,
+longitude ,);

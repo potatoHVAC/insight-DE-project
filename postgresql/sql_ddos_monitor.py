@@ -13,7 +13,7 @@ DATABASE = 'menagerie'
 def sql_differential_check():        
     conn = psycopg2.connect(host = 'localhost', database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
     cur = conn.cursor()
-    cur.execute('SELECT COUNT(*) AS Total, (SELECT cc_number FROM sequential_menagerie ORDER BY cc_number DESC LIMIT 1) AS top, COUNT(*) - 1 - (SELECT cc_number FROM sequential_menagerie ORDER BY cc_number DESC LIMIT 1) AS diff FROM sequential_menagerie;')
+    cur.execute('SELECT COUNT(*) AS Total_ip, (SELECT count(*) FROM blacklist) AS blacklist, (SELECT COUNT(*) from logs) AS messages FROM ip;')
     results = cur.fetchall()    
     cur.close()
     conn.close()
@@ -31,5 +31,3 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         sys.exit() 
-
-

@@ -10,7 +10,7 @@ DATABASE = 'menagerie'
 def truncate_sequential_menagerie():        
     conn = psycopg2.connect(host = 'localhost', database = DATABASE, user = POSTGRES_USER, password = POSTGRES_PASS)
     cur = conn.cursor()
-    cur.execute('TRUNCATE sequential_menagerie;')
+    cur.execute('TRUNCATE ip; TRUNCATE blacklist; TRUNCATE logs;')
     conn.commit()
     cur.close()
     conn.close()
