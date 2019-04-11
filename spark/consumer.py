@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.3.1 sequential_consumer.py
 
 import os
 import re
@@ -14,10 +13,10 @@ from math import floor
 SPARK_MASTER = 'ec2-35-165-101-226.us-west-2.compute.amazonaws.com'
 APPNAME = 'Olorin'
 KAFKA_BROKERS = (
-    'ec2-34-215-153-129.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-36-50-195.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-88-169-142.us-west-2.compute.amazonaws.com:9092,\
-    ec2-54-71-226-161.us-west-2.compute.amazonaws.com:9092'
+    'ec2-35-166-218-236.us-west-2.compute.amazonaws.com:9092,\
+    ec2-52-39-44-29.us-west-2.compute.amazonaws.com:9092,\
+    ec2-52-26-62-125.us-west-2.compute.amazonaws.com:9092,\
+    ec2-52-32-145-50.us-west-2.compute.amazonaws.com:9092'
 )
 POSTGRESQL_URL = 'ec2-34-220-244-192.us-west-2.compute.amazonaws.com'
 POSTGRES_USER = os.environ['POSTGRES_USER']
@@ -41,20 +40,20 @@ def get_time_stamp(raw_log):
     time_stamp_string = re.findall('\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2}', raw_log)[0]
     return datetime.datetime.strptime(time_stamp_string, '%d/%b/%Y:%H:%M:%S')
 
-def update_or_create_ip_entry(ip, time_stamp, cur):
+def update_or_create_ip_entry(ip, time_stamp, cur, log):
     cur.execute('SELECT credits, last_event FROM ip WHERE ip = %s', [ip])
     ip_row = cur.fetchall()
     
     if len(ip_row) == 0:
         cur.execute('INSERT INTO ip (ip, credits, last_event) values (%s, %s, %s);',
                     [ip, CREDITS_MAX, time_stamp])
-        return
     elif blacklisted_ip(ip, time_stamp, cur):
         return
     else:
         cur.execute('SELECT credits, last_event FROM ip WHERE ip = %s;', [ip])
         ip_credits, last_event = cur.fetchall()[0]
         update_ip_credits(ip, time_stamp, ip_credits, last_event, cur)
+    cur.execute('INSERT INTO logs(message) values (%s);', [log])
 
 def blacklisted_ip(ip, time_stamp, cur, add_to_list = False):
     cur.execute('SELECT * FROM blacklist WHERE ip = %s;', [ip])
@@ -81,10 +80,12 @@ def update_ip_credits(ip, time_stamp, ip_credits, last_event, cur):
 
 def saw_database_check(line):
     cur, conn = connect_to_menagerie()
+
     for row in line:
+        # cur.execute('INSERT INTO logs(message) values (%s);', [row[0]])
         ip = get_ip(row[0])
         time_stamp = get_time_stamp(row[0])
-        update_or_create_ip_entry(ip, time_stamp, cur)
+        update_or_create_ip_entry(ip, time_stamp, cur, row[0])
         conn.commit()
     cur.close()
     conn.close()

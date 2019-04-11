@@ -4,13 +4,13 @@ import sys
 from kafka import KafkaProducer
 from smart_open import smart_open
 
-KAFKA_BUCKET = 's3://speerd-bucket/apache_logs.txt'
+S3_BUCKET = 's3://speerd-bucket/apache_logs.txt'
 KAFKA_TOPIC = 'apache_logs'
 KAFKA_BROKERS = (
-    'ec2-34-215-153-129.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-36-50-195.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-88-169-142.us-west-2.compute.amazonaws.com:9092,\
-    ec2-54-71-226-161.us-west-2.compute.amazonaws.com:9092'
+    'ec2-35-166-218-236.us-west-2.compute.amazonaws.com:9092,\
+    ec2-52-39-44-29.us-west-2.compute.amazonaws.com:9092,\
+    ec2-52-26-62-125.us-west-2.compute.amazonaws.com:9092,\
+    ec2-52-32-145-50.us-west-2.compute.amazonaws.com:9092'
 )
 
 def produce(bucket, brokers, topic):
@@ -22,7 +22,7 @@ def produce(bucket, brokers, topic):
         producer.flush()
         
 def main():
-    produce(KAFKA_BUCKET, KAFKA_BROKERS, KAFKA_TOPIC)
+    produce(S3_BUCKET, KAFKA_BROKERS, KAFKA_TOPIC)
 
 if __name__ == '__main__':
     try:
