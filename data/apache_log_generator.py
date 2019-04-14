@@ -49,11 +49,14 @@ def post_logs(logs, destination_file):
 
 def activate_ips(active_ips, ips_history, ips_available, up_to, multiplier, chance):
     if random_chance(chance):
-        number_to_reach = len(active_ips) + randint(1, up_to)
+        if up_to != 1:
+            number_to_reach = 100
+        else:
+            number_to_reach = len(active_ips) + randint(1, up_to)
         
         while len(active_ips) < number_to_reach and len(active_ips) <= len(ips_available) // 2:
             new_ip = ips_available[randint(0, len(ips_available) - 1)]
-            active_ips.append((new_ip, randint(10*multiplier, 30*multiplier)))
+            active_ips.append((new_ip, 15 * multiplier + randint(5 * multiplier, 10 * multiplier)))
             ips_history.add(new_ip)
             
     return (active_ips, ips_history)        
@@ -61,7 +64,7 @@ def activate_ips(active_ips, ips_history, ips_available, up_to, multiplier, chan
 def main():
     malicious_ips = build_array_from(MALICIOUS_IP)
     friendly_ips = build_array_from(FRIENDLY_IP)
-    messages = build_array_from(APACHE_MESSAGE)
+    messages = build_array_from(APACHE_MESSAGE)[:50]
     apache_log_file = smart_open(APACHE_LOGS, 'w')
     generator_logs = smart_open(GENERATOR_LOGS, 'w')
 
@@ -74,29 +77,29 @@ def main():
 
     while time_offset < CYCLES_SEC:
         
-        if time_offset > 20 and time_offset < CYCLES_SEC - 400:
+        if time_offset == 20 or time_offset == 300 or time_offset == 800:
             active_ddos, ddos_history = activate_ips(
                 active_ips = active_ddos,
                 ips_history = ddos_history,
                 ips_available = malicious_ips,
-                up_to = 10,
+                up_to = 100,
                 multiplier = 10,
-                chance = 300
+                chance = 1
             )
                 
         active_friendly, friendly_history = activate_ips(
             active_ips = active_friendly,
             ips_history = friendly_history,
             ips_available = friendly_ips,
-            up_to = 3,
+            up_to = 1,
             multiplier = 1,
-            chance = 4
+            chance = 5
         )
         
         ddos_logs, active_ddos = generate_logs(
             ips = active_ddos,
             time_stamp = start_time + time_offset,
-            messages = messages,
+            messages = ['GET /js/DDOS.js HTTP/1.1" 429 6006'],
             chance = 1
         )
 
@@ -104,7 +107,7 @@ def main():
             ips = active_friendly,
             time_stamp = start_time + time_offset,
             messages = messages,
-            chance = 3
+            chance = 5
         )
 
         post_logs(ddos_logs,  apache_log_file)

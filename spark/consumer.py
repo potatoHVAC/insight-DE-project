@@ -5,6 +5,7 @@ import re
 import sys
 import psycopg2
 import datetime
+from kafka import KafkaProducer
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
@@ -40,21 +41,32 @@ def get_time_stamp(raw_log):
     time_stamp_string = re.findall('\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2}', raw_log)[0]
     return datetime.datetime.strptime(time_stamp_string, '%d/%b/%Y:%H:%M:%S')
 
-def update_or_create_ip_entry(ip, time_stamp, cur, log):
+def update_or_create_ip_entry(ip, time_stamp, cur, log, producer):
     cur.execute('SELECT credits, last_event FROM ip WHERE ip = %s', [ip])
     ip_row = cur.fetchall()
-    
+
+    output_log = log
+
     if len(ip_row) == 0:
         cur.execute('INSERT INTO ip (ip, credits, last_event) values (%s, %s, %s);',
-                    [ip, CREDITS_MAX, time_stamp])
+                    [ip, CREDITS_MAX // 5, time_stamp])
     elif blacklisted_ip(ip, time_stamp, cur):
-        return
+        output_log = format_log_for_visualizer(log)
     else:
         cur.execute('SELECT credits, last_event FROM ip WHERE ip = %s;', [ip])
         ip_credits, last_event = cur.fetchall()[0]
         update_ip_credits(ip, time_stamp, ip_credits, last_event, cur)
-    cur.execute('INSERT INTO logs(message) values (%s);', [log])
+    send_logs_to_kafka(log, output_log, producer)
 
+def send_logs_to_kafka(log, output_log, producer):
+    producer.send('olorin_input_logs', log.encode('utf-8'))
+    producer.flush()
+    producer.send('olorin_output_logs', output_log.encode('utf-8'))
+    producer.flush()
+
+def format_log_for_visualizer(log):
+    return re.sub(' 429 ', ' 200 ', log)
+    
 def blacklisted_ip(ip, time_stamp, cur, add_to_list = False):
     cur.execute('SELECT * FROM blacklist WHERE ip = %s;', [ip])
     blacklist_row = cur.fetchall()
@@ -78,26 +90,26 @@ def update_ip_credits(ip, time_stamp, ip_credits, last_event, cur):
     else:
         cur.execute('UPDATE ip SET credits = %s, last_event = %s WHERE ip = %s;', [new_credits, time_stamp, ip])
 
-def saw_database_check(line):
+def olorin_database_check(line):
     cur, conn = connect_to_menagerie()
-
+    producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)    
+    
     for row in line:
-        # cur.execute('INSERT INTO logs(message) values (%s);', [row[0]])
         ip = get_ip(row[0])
         time_stamp = get_time_stamp(row[0])
-        update_or_create_ip_entry(ip, time_stamp, cur, row[0])
+        update_or_create_ip_entry(ip, time_stamp, cur, row[0], producer)
         conn.commit()
     cur.close()
     conn.close()
 
-def saw_main(sc, ssc):
+def olorin_main(sc, ssc):
     kafkaStreamSaw = KafkaUtils.createDirectStream(
         ssc,
         ['apache_logs'],
         {'metadata.broker.list': KAFKA_BROKERS}
     )
     transactionSaw = kafkaStreamSaw.map(lambda row: row[1].split(','))
-    transactionSaw.foreachRDD(lambda rdd: rdd.foreachPartition(saw_database_check))
+    transactionSaw.foreachRDD(lambda rdd: rdd.foreachPartition(olorin_database_check))
     
 def main():
     sc = SparkContext(appName = APPNAME)
@@ -123,7 +135,7 @@ def main():
 
     ''')
 
-    saw_main(sc, ssc)
+    olorin_main(sc, ssc)
     ssc.start()
     ssc.awaitTermination()
 
