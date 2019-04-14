@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# outdated file used for generatin apache logs for testing
+
 from time import time
 from datetime import datetime
 from random import randint
@@ -17,8 +19,8 @@ def build_array_from(file_location):
     return [str(line.strip()) for line in smart_open(file_location, 'r')]
 
 def format_log(ip, time, message):
-    formated_time = datetime.fromtimestamp(time).strftime('%d/%h/%Y:%T')
-    return ("{} - - [{} -0800] \"{}\n".format(ip, formated_time, message))
+k    formated_time = datetime.fromtimestamp(time).strftime('%d/%h/%Y:%T')
+    return ("{} - - [{} -0800] {}\n".format(ip, formated_time, message))
 
 def generate_random_log(ips, time, messages):
     ip = ips[randint(0, len(ips) - 1)]
@@ -77,13 +79,13 @@ def main():
 
     while time_offset < CYCLES_SEC:
         
-        if time_offset == 20 or time_offset == 300 or time_offset == 800:
+        if time_offset == 0 or time_offset == 700 or time_offset == 1350:
             active_ddos, ddos_history = activate_ips(
                 active_ips = active_ddos,
                 ips_history = ddos_history,
                 ips_available = malicious_ips,
                 up_to = 100,
-                multiplier = 10,
+                multiplier = 20,
                 chance = 1
             )
                 
@@ -99,7 +101,7 @@ def main():
         ddos_logs, active_ddos = generate_logs(
             ips = active_ddos,
             time_stamp = start_time + time_offset,
-            messages = ['GET /js/DDOS.js HTTP/1.1" 429 6006'],
+            messages = ['GET /js/DDOS.js HTTP/1.1" 200 6006 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20090404 Firefox/2.0.0.14" "-"'],
             chance = 1
         )
 

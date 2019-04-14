@@ -23,7 +23,7 @@ POSTGRESQL_URL = 'ec2-34-220-244-192.us-west-2.compute.amazonaws.com'
 POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASS = os.environ['POSTGRES_PASS']
 DATABASE = 'menagerie'
-CREDITS_MAX = 30
+CREDITS_MAX = 100
 
 def connect_to_menagerie():        
     conn = psycopg2.connect(
