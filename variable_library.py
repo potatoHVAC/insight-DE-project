@@ -1,18 +1,17 @@
-import os
-
 APPNAME = 'Olorin'
 
-SPARK_MASTER = 'ec2-35-165-101-226.us-west-2.compute.amazonaws.com'
+SPARK_MASTER = 'ip-10-0-0-10.us-west-2.compute.internal'
 
-POSTGRESQL_URL = 'ec2-34-220-244-192.us-west-2.compute.amazonaws.com'
+POSTGRESQL_URL = 'ip-10-0-0-5.us-west-2.compute.internal'
 DATABASE_NAME = 'menagerie'
 
 KAFKA_BROKERS = (
-    'ec2-35-166-218-236.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-39-44-29.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-26-62-125.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-32-145-50.us-west-2.compute.amazonaws.com:9092'
+    'ip-10-0-0-6.us-west-2.compute.internal:9092,\
+    ip-10-0-0-9.us-west-2.compute.internal:9092,\
+    ip-10-0-0-13.us-west-2.compute.internal:9092,\
+    ip-10-0-0-11.us-west-2.compute.internal:9092'
 )
+
 MAIN_KAFKA_TOPIC = 'apache_logs'
 OLORIN_KAFKA_INPUT_TOPIC = 'olorin_input_logs'
 OLORIN_KAFKA_OUTPUT_TOPIC = 'olorin_output_logs'
