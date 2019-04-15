@@ -24,7 +24,7 @@ def generate_logs(active_ips, available_messages, is_ddos = False):
     apache_logs = []
 
     for ip, log_counter in active_ips.items():
-        if random_chance(randint(15,40)) or is_ddos:
+        if random_chance(randint(20, 30)) or is_ddos:
             apache_logs.append(format_log(ip, available_messages))
             active_ips[ip] -= 1
 

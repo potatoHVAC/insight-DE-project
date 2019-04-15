@@ -9,8 +9,8 @@ from variable_library import (
 )
 
 NUMBER_OF_DDOS_NODES = 10
-NUMBER_OF_DDOS_TARGETS = 2
-SLEEP_INTERVAL = 0.01
+NUMBER_OF_DDOS_TARGETS = 3
+SLEEP_INTERVAL = 0.05
 
 def main():
     producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)

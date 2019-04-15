@@ -81,7 +81,7 @@ def blacklisted_ip(ip, time_stamp, cur, add_to_list = False):
         
 def update_ip_credits(ip, time_stamp, ip_credits, last_event, cur):
     delta_time_sec = int(floor((time_stamp - last_event).total_seconds()))
-    new_credits = max(-3600, min(ip_credits - 1 + (delta_time_sec // 2), CREDITS_MAX))
+    new_credits = max(-3600, min(ip_credits - 1 + delta_time_sec, CREDITS_MAX))
 
     if new_credits <= 0:
         blacklisted_ip(ip, time_stamp, cur, True)
