@@ -1,34 +1,38 @@
 # Olórin
 
+<div style="text-align:center; margin: 50px 0"><img src ="/images/olorin_logo.png" height="150"/></div>
+
 By Daniel Speer
 
 A project for the Insight Data Engineering Fellowship.
 
-# Introduction
+[Presentation slides](#)
 
-DDOS and how prevent it. 
+<hr/>
 
-# Tech Stack
+## Index
+1. [Setup Instructions](README.md##setup-instructions)
+2. [Introduction](README.md##introduction)
+3. [Architecture](README.md##architecture)
+4. [Dataset](README.md##dataset)
+5. [Engineering Challenges](README.md##engineering-challenges)
+6. [Trade-offs](README.md##trade-offs)
 
-1. S3
-2. Python
-3. Kafka
-4. Spark
-5. Postgres
-6. Flask
+<hr/>
 
-# Data Source
+## Setup Instructions
 
-* Generated Apache Logs
 
-# Engineering Challenge
 
-* Creating a method of DDOS detection that doesn't target super users.
-* 
+<hr/>
 
-# Business Value
+## Introduction
 
-# MVP
+## Architecture
 
-# Stretch Goals
+## Dataset
+
+## Engineering Challenges
+
+## Trade-offs
 
