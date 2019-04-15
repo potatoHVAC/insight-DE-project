@@ -11,24 +11,22 @@ from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from math import floor
 
-SPARK_MASTER = 'ec2-35-165-101-226.us-west-2.compute.amazonaws.com'
-APPNAME = 'Olorin'
-KAFKA_BROKERS = (
-    'ec2-35-166-218-236.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-39-44-29.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-26-62-125.us-west-2.compute.amazonaws.com:9092,\
-    ec2-52-32-145-50.us-west-2.compute.amazonaws.com:9092'
+from variable_library import (
+    SPARK_MASTER,
+    APPNAME,
+    KAFKA_BROKERS,
+    POSTGRESQL_URL,
+    DATABASE_NAME
 )
-POSTGRESQL_URL = 'ec2-34-220-244-192.us-west-2.compute.amazonaws.com'
+
 POSTGRES_USER = os.environ['POSTGRES_USER']
 POSTGRES_PASS = os.environ['POSTGRES_PASS']
-DATABASE = 'menagerie'
 CREDITS_MAX = 100
 
 def connect_to_menagerie():        
     conn = psycopg2.connect(
         host = POSTGRESQL_URL,
-        database = DATABASE,
+        database = DATABASE_NAME,
         user = POSTGRES_USER,
         password = POSTGRES_PASS
     )
@@ -49,7 +47,7 @@ def update_or_create_ip_entry(ip, time_stamp, cur, log, producer):
 
     if len(ip_row) == 0:
         cur.execute('INSERT INTO ip (ip, credits, last_event) values (%s, %s, %s);',
-                    [ip, CREDITS_MAX // 5, time_stamp])
+                    [ip, CREDITS_MAX // 10, time_stamp])
     elif blacklisted_ip(ip, time_stamp, cur):
         output_log = format_log_for_visualizer(log)
     else:
