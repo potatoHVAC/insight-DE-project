@@ -7,6 +7,7 @@ import psycopg2
 import datetime
 from kafka import KafkaProducer
 from pyspark import SparkContext
+from pyspark.sql import SQLContext, Row
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from math import floor
@@ -16,7 +17,8 @@ from variable_library import (
     APPNAME,
     KAFKA_BROKERS,
     POSTGRESQL_URL,
-    DATABASE_NAME
+    DATABASE_NAME,
+    OLORIN_ASCII_LOGO
 )
 
 POSTGRES_USER = os.environ['POSTGRES_USER']
@@ -114,24 +116,7 @@ def main():
     sc.setLogLevel("WARN")
     ssc = StreamingContext(sc, 1)
 
-    print(r''' 
-
-
-
-
-
-                    ________  .__               .__        
-                    \_____  \ |  |   __/________|__| ____  
-                     /   |   \|  |  /  _ \_  __ \  |/    \ 
-                    /    |    \  |_(  <_> )  | \/  |   |  \
-                    \_______  /____/\____/|__|  |__|___|  /
-                            \/                          \/ 
-
-
-
-
-
-    ''')
+    print(OLORIN_ASCII_LOGO)
 
     olorin_main(sc, ssc)
     ssc.start()

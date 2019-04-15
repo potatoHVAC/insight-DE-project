@@ -17,3 +17,22 @@ OLORIN_KAFKA_INPUT_TOPIC = 'olorin_input_logs'
 OLORIN_KAFKA_OUTPUT_TOPIC = 'olorin_output_logs'
 
 APACHE_MESSAGES_FILE = 's3://speerd-bucket/apache_messages.txt'
+
+OLORIN_ASCII_LOGO = r''' 
+
+
+
+
+
+                    ________  .__               .__        
+                    \_____  \ |  |   __/________|__| ____  
+                     /   |   \|  |  /  _ \_  __ \  |/    \ 
+                    /    |    \  |_(  <_> )  | \/  |   |  \
+                    \_______  /____/\____/|__|  |__|___|  /
+                            \/                          \/ 
+
+
+
+
+
+    '''
