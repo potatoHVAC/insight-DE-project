@@ -14,8 +14,9 @@ from variable_library import (
     SPARK_MASTER,
     APPNAME,
     KAFKA_BROKERS,
-    POSTGRESQL_URL,
-    DATABASE_NAME,
+    MAIN_KAFKA_TOPIC,
+    DATABASE_IP,
+    POSTGRESQL_DATABASE_NAME,
     OLORIN_ASCII_LOGO
 )
 from private_variable_library import(
@@ -27,8 +28,8 @@ CREDITS_MAX = 100
 
 def connect_to_menagerie():        
     conn = connect(
-        host = POSTGRESQL_URL,
-        database = DATABASE_NAME,
+        host = DATABASE_IP,
+        database = POSTGRESQL_DATABASE_NAME,
         user = POSTGRES_USER,
         password = POSTGRES_PASS
     )
@@ -105,7 +106,7 @@ def olorin_database_check(line):
 def olorin_main(ssc):
     kafkaStreamSaw = KafkaUtils.createDirectStream(
         ssc,
-        ['apache_logs'],
+        [MAIN_KAFKA_TOPIC],
         {'metadata.broker.list': KAFKA_BROKERS}
     )
     transactionSaw = kafkaStreamSaw.map(lambda row: row[1].split(','))
