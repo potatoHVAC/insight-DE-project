@@ -3,11 +3,10 @@
 import os
 import re
 import sys
-import psycopg2
-import datetime
+from  psycopg2 import connect
+from  datetime import datetime
 from kafka import KafkaProducer
 from pyspark import SparkContext
-from pyspark.sql import SQLContext, Row
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from math import floor
@@ -26,7 +25,7 @@ POSTGRES_PASS = os.environ['POSTGRES_PASS']
 CREDITS_MAX = 100
 
 def connect_to_menagerie():        
-    conn = psycopg2.connect(
+    conn = connect(
         host = POSTGRESQL_URL,
         database = DATABASE_NAME,
         user = POSTGRES_USER,
@@ -39,7 +38,7 @@ def get_ip(raw_log):
 
 def get_time_stamp(raw_log):
     time_stamp_string = re.findall('\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2}', raw_log)[0]
-    return datetime.datetime.strptime(time_stamp_string, '%d/%b/%Y:%H:%M:%S')
+    return datetime.strptime(time_stamp_string, '%d/%b/%Y:%H:%M:%S')
 
 def update_or_create_ip_entry(ip, time_stamp, cur, log, producer):
     cur.execute('SELECT credits, last_event FROM ip WHERE ip = %s', [ip])
@@ -102,7 +101,7 @@ def olorin_database_check(line):
     cur.close()
     conn.close()
 
-def olorin_main(sc, ssc):
+def olorin_main(ssc):
     kafkaStreamSaw = KafkaUtils.createDirectStream(
         ssc,
         ['apache_logs'],
@@ -118,7 +117,7 @@ def main():
 
     print(OLORIN_ASCII_LOGO)
 
-    olorin_main(sc, ssc)
+    olorin_main(ssc)
     ssc.start()
     ssc.awaitTermination()
 
