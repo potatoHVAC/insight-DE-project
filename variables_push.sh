@@ -7,6 +7,7 @@ scp -i ~/.ssh/daniel-IAM-keypair.pem ./app/variable_library.py ubuntu@ec2-35-165
 
 # spark
 scp -i ~/.ssh/daniel-IAM-keypair.pem ./app/variable_library.py ubuntu@ec2-35-165-101-226.us-west-2.compute.amazonaws.com:~/
+scp -i ~/.ssh/daniel-IAM-keypair.pem ./app/private_variable_library.py ubuntu@ec2-35-165-101-226.us-west-2.compute.amazonaws.com:~/
 
 # database
 

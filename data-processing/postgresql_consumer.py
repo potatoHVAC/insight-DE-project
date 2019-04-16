@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import re
 import sys
-from  psycopg2 import connect
-from  datetime import datetime
+from psycopg2 import connect
+from datetime import datetime
 from kafka import KafkaProducer
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
@@ -19,9 +18,11 @@ from variable_library import (
     DATABASE_NAME,
     OLORIN_ASCII_LOGO
 )
+from private_variable_library import(
+    POSTGRES_USER,
+    POSTGRES_PASS
+)
 
-POSTGRES_USER = os.environ['POSTGRES_USER']
-POSTGRES_PASS = os.environ['POSTGRES_PASS']
 CREDITS_MAX = 100
 
 def connect_to_menagerie():        
