@@ -24,7 +24,7 @@ def main():
         if len(active_ips) < MAX_IPS:
             active_ips = activate_ips(
                 active_ips = active_ips,
-                number_to_activate = 1,
+                number_to_activate = MAX_IPS,
                 last_ip_num_range = [0,150]
             )
 

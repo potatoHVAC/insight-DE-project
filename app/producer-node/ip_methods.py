@@ -8,13 +8,13 @@ from smart_open import smart_open
 def build_array_from(file_location):
     return [str(line.strip()) for line in smart_open(file_location, 'r')]
 
-def activate_ips(active_ips, number_to_activate, last_ip_num_range, is_ddos = False):
+def activate_ips(active_ips, number_to_activate, last_ip_num_range, ddos_message_count = False):
     target = len(active_ips) + number_to_activate
 
     while len(active_ips) < target:
         new_ip = generate_ip(last_ip_num_range)
-        if is_ddos:
-            active_ips[new_ip] = 500
+        if ddos_message_count:
+            active_ips[new_ip] = ddos_message_count
         else:
             active_ips[new_ip] = randint(5, 30)
         

@@ -9,8 +9,8 @@ def time_stamp():
 def post_log(count, last_time, log_file):
     count_log = open(log_file, 'a')
     current_time = time()
-    count_log.write('{} messages in {} seconds, processed by {}\n'\
-                    .format(count, str(current_time - last_time)[:5], time_stamp()))
+    count_log.write('{} logs / second, processed at {}\n'\
+                    .format(str(1000 / (current_time - last_time))[:8], time_stamp()))
     count_log.close()
     return current_time   
     
