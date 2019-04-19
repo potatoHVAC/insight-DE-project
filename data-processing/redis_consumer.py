@@ -47,6 +47,10 @@ def send_logs_to_kafka(input_log, output_log, producer):
     producer.send('olorin_output_logs', output_log.encode('utf-8'))
     producer.flush()
 
+def post_ip_flag(ip, producer):
+    producer.send('ip_flag', ip.encode('utf-8'))
+    producer.flush()
+
 def format_log_for_visualizer(log):
     return re.sub(' 429 ', ' 200 ', log)
 
@@ -61,10 +65,10 @@ def tokens_set(ip, tokens, time_stamp, red):
     red.set(ip, redis_value)
 
 def update_tokens(tokens, last_time_stamp_sec, time_stamp_sec):
-    new_token_value = tokens + time_stamp_sec - last_time_stamp_sec - 1
+    new_token_value = tokens + ((time_stamp_sec - last_time_stamp_sec) // 2) - 1
     return max(0, new_token_value)
 
-def check_or_update_ip_token(input_log, red):
+def check_or_update_ip_token(input_log, red, producer):
     ip = get_ip(input_log)
     time_stamp_sec = convert_datetime_to_int(get_time_stamp(input_log))
     
@@ -80,6 +84,7 @@ def check_or_update_ip_token(input_log, red):
 
         if new_token_value == 0:
             flag_set(ip, time_stamp_sec, red)
+            post_ip_flag(ip, producer)
             return format_log_for_visualizer(input_log)
         return input_log
     
@@ -94,7 +99,11 @@ def olorin_database_check(line):
     red = connect_to_redis()
     
     for row in line:
-        output_log = check_or_update_ip_token(row[0], red)
+        if len(row[0]) > 0:
+            output_log = check_or_update_ip_token(row[0], red, producer)
+        else:
+            output_log = row[0]
+            
         send_logs_to_kafka(row[0], output_log, producer)
 
 def olorin_main(ssc):
