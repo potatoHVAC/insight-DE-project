@@ -1,0 +1,10 @@
+purchase_type: on_demand
+subnet_id: subnet-046718db7bae47500
+num_instances: 3
+key_name: daniel-IAM-keypair
+security_group_ids: sg-0d3d22b5ce5677c5c
+instance_type: m4.large
+tag_name: kafka-cluster
+vol_size: 100
+role: worker
+use_eips: true
