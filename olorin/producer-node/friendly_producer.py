@@ -13,7 +13,7 @@ SLEEP_INTERVAL = 0.1
 
 def main():
     producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)
-    log_file = open('./producer_logs/friendly_ip_producer.log', 'a')
+    log_file = open('./friendly_ip_producer.log', 'a')
     available_messages = build_array_from(APACHE_MESSAGES_FILE)[:50]
 
     active_ips = {}

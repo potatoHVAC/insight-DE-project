@@ -14,7 +14,7 @@ SLEEP_INTERVAL = 0.05
 
 def main(rate_limit, record_log):
     producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)
-    log_file = open('./producer_logs/ddos_ip_producer.log', 'a')
+    log_file = open('./ddos_ip_producer.log', 'a')
     available_messages = build_array_from(APACHE_MESSAGES_FILE)[:NUMBER_OF_DDOS_TARGETS]
 
     active_ips = activate_ips(
