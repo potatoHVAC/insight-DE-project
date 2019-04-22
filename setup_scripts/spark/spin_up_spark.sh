@@ -10,4 +10,7 @@
 #peg service spark-cluster hadoop start
 #peg install spark-cluster spark
 #peg service spark-cluster spark start
-peg sshcmd-cluster spark-cluster ""
+peg sshcmd-cluster spark-cluster "sudo apt update -y; sudo apt install libpq-dev -y;"
+peg sshcmd-cluster spark-cluster "pip install redis"
+peg sshcmd-cluster spark-cluster "pip install pyspark"
+peg sshcmd-cluster spark-cluster "pip install kafka-python"
