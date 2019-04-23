@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from ip_methods import *
+from producer_methods import *
 from variable_library import ( 
     MAIN_KAFKA_TOPIC,
     KAFKA_BROKERS,
