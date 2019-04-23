@@ -10,16 +10,6 @@ A project for the Insight Data Engineering Fellowship.
 
 <hr/>
 
-## Index
-1. [Setup Instructions](README.md##setup-instructions)
-2. [Introduction](README.md##introduction)
-3. [Architecture](README.md##architecture)
-4. [Dataset](README.md##dataset)
-5. [Engineering Challenges](README.md##engineering-challenges)
-6. [Trade-offs](README.md##trade-offs)
-
-<hr/>
-
 ## Setup Instructions
 
 #### Install support software
@@ -63,7 +53,7 @@ $ ./setup_scripts/producer_setup.sh
 $ ./setup_scripts/database_setup.sh
 $ ./setup_scripts/visualizer_setup.sh
 ```
-##### SSH into producer node.
+* SSH into producer node.
 ```bash
 $ ./ssh_scripts/producer.sh
 ```
@@ -71,7 +61,7 @@ $ ./ssh_scripts/producer.sh
 ```bash
 producerNode: $ aws configure
 ```
-##### SSH into database node.
+* SSH into database node.
 ```bash
 $ ./ssh_scripts/producer.sh
 ```
@@ -81,8 +71,7 @@ $ ./ssh_scripts/producer.sh
 ```bash
 databaseNode: $ sudo service redis-server restart
 ```
-* Add the following line to the end of `/etc/sysctl.conf`
- * `vm.overcommit_memory = 1`
+* Add `vm.overcommit_memory = 1` to the end of `/etc/sysctl.conf`
  
 <hr/>
 
