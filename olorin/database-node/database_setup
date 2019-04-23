@@ -1,59 +1,16 @@
 ### Create trigger function for update time automation
-CREATE OR REPLACE FUNCTION update_modified_timestamp() RETURNS TRIGGER 
-LANGUAGE plpgsql
-AS
-$$
-BEGIN
-    IF (NEW != OLD) THEN
-        NEW.updated_at = CURRENT_TIMESTAMP;
-        RETURN NEW;
-    END IF;
-    RETURN OLD;
-END;
-$$;
 
-### Apply trigger to table
-CREATE TRIGGER update_modified_timestamp BEFORE UPDATE ON <table_name> FOR EACH ROW EXECUTE PROCEDURE update_modified_timestamp();
-
-
-
-### update blacklist event
-CREATE OR REPLACE FUNCTION update_blacklist_event() RETURNS TRIGGER 
-LANGUAGE plpgsql
-AS
-$$
-BEGIN
-    IF (NEW != OLD) THEN
-        NEW.number_of_events = OLD.number_of_events + 1;
-        RETURN NEW;
-    END IF;
-    RETURN OLD;
-END;
-$$;
-CREATE TRIGGER update_blacklist_event BEFORE UPDATE ON blacklist FOR EACH ROW EXECUTE PROCEDURE update_blacklist_event();
-
-
-
-### 
 CREATE TABLE blacklist(
 ip VARCHAR(16) PRIMARY KEY,
 activated BOOLEAN DEFAULT True,
 incident_count INT DEFAULT 1,
 last_event TIMESTAMP,
-created_at TIMESTAMP DEFAULT current_timestamp,
-updated_at TIMESTAMP DEFAULT current_timestamp);
+created_at TIMESTAMP DEFAULT current_timestamp
+);
 
 CREATE TABLE ip(
 ip VARCHAR(16) PRIMARY KEY,
 credits INT DEFAULT 100,
 last_event TIMESTAMP,
-created_at TIMESTAMP DEFAULT current_timestamp,
-updated_at TIMESTAMP DEFAULT current_timestamp);
-
-CREATE TABLE locaiton(
-ip VARCHAR(16) PRIMARY KEY,
-city ,
-country,
-country_code ,
-latitude ,
-longitude ,);
+created_at TIMESTAMP DEFAULT current_timestamp
+);

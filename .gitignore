@@ -1,5 +1,4 @@
 .#*
 addresses
-ssh_scripts/*
 variable_library/private_variable_library.py
 data
