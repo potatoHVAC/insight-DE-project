@@ -3,7 +3,7 @@
 # producer 
 scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/producer-node/friendly_producer.py ubuntu@${PRODUCER_IP}:~/
 scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/producer-node/ddos_producer.py ubuntu@${PRODUCER_IP}:~/
-scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/producer-node/ip_methods.py ubuntu@${PRODUCER_IP}:~/
+scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/producer-node/producer_methods.py ubuntu@${PRODUCER_IP}:~/
 
 # kafka
 
