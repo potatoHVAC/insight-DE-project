@@ -32,6 +32,10 @@ def get_ip(raw_log):
     return re.findall('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', raw_log)[0]
 
 def get_time_stamp(raw_log):
+    '''
+    input: string -- raw apache log
+    output: datetime
+    '''
     time_stamp_string = re.findall('\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2}', raw_log)[0]
     return datetime.strptime(time_stamp_string, '%d/%b/%Y:%H:%M:%S')
 
@@ -42,19 +46,33 @@ def current_time_stamp():
     return int(time())
 
 def send_logs_to_kafka(input_log, output_log, producer):
+    '''
+    Publish input_log and output_log to kafka topics olorin_input_logs and olorin_output_logs respectively.
+      These brokers are only for outputting to the visualizer Logstalgia. 
+    '''
     producer.send('olorin_input_logs', input_log.encode('utf-8'))
     producer.flush()
     producer.send('olorin_output_logs', output_log.encode('utf-8'))
     producer.flush()
 
 def post_ip_flag(ip, producer):
+    '''
+    Publish a flagged ip address to the kafka topic ip_flag
+    '''
     producer.send('ip_flag', ip.encode('utf-8'))
     producer.flush()
 
 def format_log_for_visualizer(log):
+    '''
+    Change the HTML response code. This is used to change the behavior of the visualizer, Logstalgia, and not 
+      necessary for Olorin's flagging behavior. 
+    '''
     return re.sub(' 429 ', ' 200 ', log)
 
 def flag_check(ip, red):
+    '''
+    Check to see if the ip has been flagged.
+    '''
     return red.get("flag{}".format(ip))
 
 def flag_set(ip, time_stamp_sec, red):
@@ -68,10 +86,20 @@ def update_tokens(tokens, last_time_stamp_sec, time_stamp_sec):
     new_token_value = tokens + ((time_stamp_sec - last_time_stamp_sec) // 2) - 1
     return max(0, new_token_value)
 
-def check_or_update_ip_token(input_log, red, producer):
+def update_or_create_ip_token(input_log, red, producer):
+    '''
+    input: input_log -> string -- raw apache log
+           red       -> redis connection
+           producer  -> kafka producer
+    output: string -- formatted apache log used by the visualizer Logstalgia
+
+    Check ip to see if it is flagged then update/create its token counter accordingly. Return the formatted 
+      apache log for use by the visualizer Logstalgia.
+    '''
     ip = get_ip(input_log)
     time_stamp_sec = convert_datetime_to_int(get_time_stamp(input_log))
-    
+
+    # check for flagged ip
     if flag_check(ip, red):
         flag_set(ip, time_stamp_sec, red)
         return format_log_for_visualizer(input_log)
@@ -100,7 +128,7 @@ def olorin_database_check(line):
     
     for row in line:
         if len(row[0]) > 0:
-            output_log = check_or_update_ip_token(row[0], red, producer)
+            output_log = update_or_create_ip_token(row[0], red, producer)
         else:
             output_log = row[0]
             

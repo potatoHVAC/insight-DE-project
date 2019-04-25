@@ -8,15 +8,25 @@ from variable_library import (
     APACHE_MESSAGES_FILE
 )
 
+# Number of active DDOS ip's in each attack
 NUMBER_OF_DDOS_NODES = 100
+# Number of server addresses for DDOS targets
 NUMBER_OF_DDOS_TARGETS = 5
 SLEEP_INTERVAL = 0.05
 
 def main(rate_limit, record_log):
+    '''
+    input: BOOLEAN to triger rate limiting and log recording
+    output: None
+
+    Driver function for publishing apache logs to the kafka broker. 
+    '''
+
     producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)
     log_file = open('./ddos_ip_producer.log', 'a')
     available_messages = build_array_from(APACHE_MESSAGES_FILE)[:NUMBER_OF_DDOS_TARGETS]
 
+    # Activate all active DDOS ips
     active_ips = activate_ips(
         active_ips = {},
         number_to_activate = NUMBER_OF_DDOS_NODES,

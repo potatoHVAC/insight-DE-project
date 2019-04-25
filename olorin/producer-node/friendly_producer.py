@@ -8,10 +8,18 @@ from variable_library import (
     APACHE_MESSAGES_FILE
 )
 
+# Set the maxiumum number of frienly ip's 
 MAX_IPS = 500
 SLEEP_INTERVAL = 0.1
 
 def main():
+    '''
+    input: BOOLEAN to triger rate limiting and log recording
+    output: None
+
+    Driver function for publishing apache logs to the kafka broker. 
+    '''
+
     producer = KafkaProducer(bootstrap_servers = KAFKA_BROKERS)
     log_file = open('./friendly_ip_producer.log', 'a')
     available_messages = build_array_from(APACHE_MESSAGES_FILE)[:50]
@@ -21,6 +29,7 @@ def main():
     log_count = 0
     while True:
 
+        # increase the active ip's upto MAX_IPS. 
         if len(active_ips) < MAX_IPS:
             active_ips = activate_ips(
                 active_ips = active_ips,
