@@ -97,7 +97,7 @@ $ ./ssh_scripts/producer.sh
 ```
 * Start the friendly producer.
 ```bash
-producerNode: $ friendly_producer.py
+producerNode: $ ./friendly_producer.py
 ```
 * Start the Logstalgia visualizer
 ```bash
@@ -110,7 +110,7 @@ $ ./src/ip_log.sh
 ```
 * Start and stop friendly or DDOS traffic on the producer node.
 ```bash
-producerNode: $ friendly_producer.py
+producerNode: $ ./friendly_producer.py
 producerNode: $ ./ddos_producer.py
 ```
 
