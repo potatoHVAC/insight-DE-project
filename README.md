@@ -83,7 +83,7 @@ databaseNode: $ sudo service redis-server restart
 
 ## Architecture
 
-<div style="text-align:center; margin: 50px 0"><img src ="/images/Olorin.png" height="150"/></div>
+<div style="text-align:center; margin: 50px 0"><img src ="/images/Olorin.png" height="500"/></div>
 
 ## Engineering Challenges
 
