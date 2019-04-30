@@ -1,9 +1,33 @@
 # Running instructions for Olórin demo
 
-* Use `ssh_scripts/spark_master.sh` to access the spark master node.
-* Start Spark Streaming using `redis_start_consumer.sh` found on the spark master node.
-* Use `ssh_scripts/producer.sh` to access the producer node.
-* Start `friendly_producer.py` found on the producer node.
-* Start `src/view_visualizer.sh` to view input and output traffic in Logstalgia. Note, the windows will open on top of each other.
-* Start `src/ip_log.sh` in its own terminal for viewing flagged IP addresses. Note, this will remain blank until the next step.
-* Start `ddos_producer.py` found on the producer node to initiate simulated DDOS attack. 
+
+* SSH into Spark master node.
+```bash
+$ ./ssh_scripts/spark_master.sh
+```
+* Start Spark Streaming.
+```bash
+sparkeMasterNode: $ ./redis_start_consumer.sh
+```
+* SSH into producer node.
+```bash
+$ ./ssh_scripts/producer.sh
+```
+* Start the friendly producer.
+```bash
+producerNode: $ friendly_producer.py
+```
+* Start the Logstalgia visualizer
+```bash
+$ ./src/view_visualizer.sh
+```
+Note: the windows will open on top of each other and will not open until messages have been passed into Olórin.
+* Start the ip log to view flagged IPs in real time on the command line.
+```bash
+$ ./src/ip_log.sh
+```
+* Start and stop friendly or DDOS traffic on the producer node.
+```bash
+producerNode: $ friendly_producer.py
+producerNode: $ ./ddos_producer.py
+```
