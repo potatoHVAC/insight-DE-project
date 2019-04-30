@@ -10,9 +10,15 @@ A project for the Insight Data Engineering Fellowship.
 
 <hr/>
 
+## Introduction
+
+Olórin is a real time apache log monitoring system for identifying high volume users. 
+
+<hr/>
+
 ## Setup Instructions
 
-#### Install support software
+#### Install local support software
 
 * Install [Pegasus](https://github.com/InsightDataScience/pegasus)
 * Install [Logstalgia](https://logstalgia.io/#)
@@ -75,15 +81,22 @@ databaseNode: $ sudo service redis-server restart
  
 <hr/>
 
-## Introduction
-
 ## Architecture
 
-* Python Producer
-* Kafka
-* Spark Streaming
-* Redis
+<div style="text-align:center; margin: 50px 0"><img src ="/images/Olorin.png" height="150"/></div>
 
 ## Engineering Challenges
 
+Originally Olórin used PostgreSLQ to view all connections for a given ip over a set window of time. This resulted in an unnecessary amount of archived data and long check times for each connection. Both of these problems prevent  Olórin from being a practical solution for a high volume web server. 
 
+#### Algorithm Switch
+
+The historical log was eliminated by switching to a token system for keeping track of IP activity. Each IP is given an initial set of tokens representing an allowed transaction. Olórin will now store a single entry per IP with a time stamp for their last interaction and their remaining tokens. Every transaction going forward will compare the current time to their last interaction and update their token count accordingly – up to a maximum value – before reducing their token count by one. This reduces the stored data from an extensive record of all transactions to a single entry per IP address. 
+
+#### Database Selection
+
+Updating the algorithm for identifying high volume IP addresses changed the required behavior of the database.  Olórin no longer requires relational checks but instead is using a key value store with at most two connections per Apache log so Redis was selected for its fast reads and writes functionality. 
+
+#### Kafka Improvements
+
+Switching the algorithm and database had over 2X improvements on functionality and no longer slows down as we scale up the number of IP addresses but it still has not reached usable numbers. From here it was identified that Kafka was operating on a single partition. Increasing the partition count to match the number of Spark consumers resulted in a 12X increase in performance. 
