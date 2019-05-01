@@ -17,7 +17,6 @@ scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/spark-node/redis_star
 
 # visualizer
 
-scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/visualizer-node/olorin.py ubuntu@${VISUALIZER_IP}:~/
 scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/visualizer-node/input_consumer.py ubuntu@${VISUALIZER_IP}:~/
 scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/visualizer-node/output_consumer.py ubuntu@${VISUALIZER_IP}:~/
 scp -i ~/.ssh/daniel-IAM-keypair.pem ${OLORIN_HOME}/olorin/visualizer-node/consumer_methods.py ubuntu@${VISUALIZER_IP}:~/
